@@ -20,19 +20,19 @@ module.exports = {
 npm i
 npm start
 ```
-![](./pic/2-1.png)
+![](./pic/2-1)
 
 ```shell=
 ngrok http 3000
 ```
  參考 `不必真的架站也能-5-分鐘實機體驗`
-![](./pic/2-3.png)
+![](./pic/2-3)
  
-![](./pic/2-2.png)
+![](./pic/2-2)
 
 
 # DEMO
-![](./pic/demo.png)
+![](./pic/demo)
 
 # 參考資料
 * [linebot](https://github.com/boybundit/linebot)
