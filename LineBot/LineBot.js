@@ -1,10 +1,10 @@
 var linebot = require('linebot');
 var userInputHandler = require('./userInputHandler');
-var _broadcast = require('./broadcast');
+var _broadcast = require('./Broadcast');
 
 var settings = require('./settings');
 
-var g_BitMex = require('../BitMex/BitMexWS'); // g_BitMex為最新的BitMEX回傳的資訊
+var g_BitMex = require('../BitMEX/BitMexWS'); // g_BitMex為最新的BitMEX回傳的資訊
 
 /**
  * Variable
