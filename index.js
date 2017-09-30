@@ -1,5 +1,5 @@
 var express = require('express');
-var linebot = require('./LineBot/LineBot');
+var linebot = require('./LineBot/');
 
 const app = express();
 const linebotParser = linebot.parser();

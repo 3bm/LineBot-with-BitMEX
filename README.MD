@@ -1,5 +1,5 @@
 # BitMEX Line Bot
-即時查詢BitMEX XBTUSD/XBTU17當前資訊
+即時查詢BitMEX價格
 
 # 需求
 * node.js 
