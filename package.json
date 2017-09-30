@@ -16,6 +16,7 @@
     "moment": "^2.18.1",
     "node-emoji": "^1.8.1",
     "systeminformation": "^3.30.2",
-    "ws": "^3.1.0"
+    "ws": "^3.1.0",
+    "moment": "^2.18.1"
   }
 }
