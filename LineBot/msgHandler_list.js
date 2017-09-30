@@ -12,10 +12,10 @@ module.exports = (event) => {
         if (typeof userId == 'undefined') {
             return event.reply("無法取得userId")
         } else if (typeof list.user.find((ele) => { return ele.id == userId; }) != "undefined") {
-            return event.push(userId, "已在清單內");
+            return bot.push(userId, "已在清單內");
         } else {
             list.user.push({ id: userId });
-            return event.push(userId, "已加入清單");
+            return bot.push(userId, "已加入清單");
         }
     }
 
@@ -30,9 +30,9 @@ module.exports = (event) => {
             return event.reply("無法取得userId")
         } else if ((idx = list.user.findIndex((ele) => { return ele.id == userId; })) != -1) {
             list.user.splice(startIdx, 1);
-            return event.push(userId, "已自清單移除");
+            return bot.push(userId, "已自清單移除");
         } else {
-            return event.push(userId, "不在清單內");
+            return bot.push(userId, "不在清單內");
         }
     }
 }
