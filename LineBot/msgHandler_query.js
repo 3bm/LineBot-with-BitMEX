@@ -30,7 +30,8 @@ module.exports = (event) => {
                 replyMsg = replyMsg + emoji.get('heavy_multiplication_x'); // 叉叉X圖案
             }
 
-            return event.reply(replyMsg);
+            event.reply(replyMsg);
+            return true;
         }
     }
 }

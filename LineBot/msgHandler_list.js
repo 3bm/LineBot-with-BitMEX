@@ -10,12 +10,15 @@ module.exports = (event) => {
 
         let userId = event.source.userId;
         if (typeof userId == 'undefined') {
-            return event.reply("無法取得userId")
+            event.reply("無法取得userId")
+            return ture;
         } else if (typeof list.user.find((ele) => { return ele.id == userId; }) != "undefined") {
-            return bot.push(userId, "已在清單內");
+            bot.push(userId, "已在清單內");
+            return ture;
         } else {
             list.user.push({ id: userId });
-            return bot.push(userId, "已加入清單");
+            bot.push(userId, "已加入清單");
+            return ture;
         }
     }
 
@@ -27,12 +30,15 @@ module.exports = (event) => {
         let startIdx;
         let userId = event.source.userId;
         if (typeof userId == 'undefined') {
-            return event.reply("無法取得userId")
+            event.reply("無法取得userId");
+            return true;
         } else if ((idx = list.user.findIndex((ele) => { return ele.id == userId; })) != -1) {
             list.user.splice(startIdx, 1);
-            return bot.push(userId, "已自清單移除");
+            bot.push(userId, "已自清單移除");
+            return true;
         } else {
-            return bot.push(userId, "不在清單內");
+            bot.push(userId, "不在清單內");
+            return true;
         }
     }
 }

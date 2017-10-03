@@ -2,6 +2,8 @@
  * 向使用者廣播訊息
  */
 function broadcast(text) {
+    formattedLog(`broadcast start, text:${text}`);
+
     let userArr, start = 0;
     while ((userArr = global.list.user.slice(start, start + 150)).length > 0) {
         console.log(`廣播人數:${start + userArr.length}/${global.list.user.length}`);
@@ -14,6 +16,8 @@ function broadcast(text) {
         bot.multicast(userIdArr, text);
         start = start + 150;
     }
+
+    formattedLog(`broadcast end`);
 }
 
 /**

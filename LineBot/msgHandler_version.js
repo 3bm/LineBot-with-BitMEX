@@ -22,7 +22,8 @@ module.exports = async (event) => {
             `Platform: ${platform}\n` +
             "Source Code: NULL";
 
-        return event.reply(versionStr)
+        event.reply(versionStr);
+        return true;
     }
 }
 

@@ -18,6 +18,7 @@ module.exports = (event) => {
         })
         let str = '[User List]\n' + strArray.join('\n');
 
-        return event.reply(str);
+        event.reply(str);
+        return true;
     }
 }

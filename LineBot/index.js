@@ -24,15 +24,16 @@ module.exports = bot;
 
 utility.broadcast(`${emoji.get('umbrella_on_ground')}系統已啟動`);
 // 執行BitMEX相關程式
-require('../BitMEX/BitMEX_realtime.js'); // 查價功能
-// require('../BitMEX/BitMEX_realtimemd.js'); // 成交提醒(未實作)
+// require('../BitMEX/BitMEX_realtime.js'); // 查價功能
+require('../BitMEX/BitMEX_realtimemd.js'); // 成交提醒
 
 // 管理line message
 const msgHandler_admin = require('./msgHandler_admin'); // admin專用
 const msgHandler_list = require('./msgHandler_list'); // 名單
-const msgHandler_query = require('./msgHandler_query'); // 使用者查價
-const msgHandler_help = require('./msgHandler_help');// 使用說明
-const msgHandler_version = require('./msgHandler_version');// 版本資訊
+// const msgHandler_query = require('./msgHandler_query'); // 使用者查價
+// const msgHandler_help = require('./msgHandler_help');// 使用說明
+// const msgHandler_version = require('./msgHandler_version');// 版本資訊
+const msgHandler_test = require('./msgHandler_test'); 
 
 /**
  * process is terminated by Ctrl+C
@@ -46,13 +47,13 @@ process.on('exit', (code) => {
 
 process.on('SIGINT', async (code) => {
     // 強制等待
-    await utility.delay(500);
+    // await utility.delay(500);
 
     // process離開前通知使用者
-    utility.broadcast(`${emoji.get('closed_umbrella')}系統已關閉`);
+    // utility.broadcast(`${emoji.get('closed_umbrella')}系統已關閉`);
 
     // 強制等待
-    await utility.delay(500);
+    // await utility.delay(500);
 
     process.exit();
 });
@@ -91,11 +92,13 @@ function saveList() {
 bot.on('message', function (event) {
     switch (event.message.type) {
         case 'text':
-            msgHandler_admin(event);
-            msgHandler_list(event);
-            msgHandler_query(event);
-            msgHandler_help(event);
-            msgHandler_version(event);
+            msgHandler_admin(event) ||
+            msgHandler_list(event) ||
+            msgHandler_test(event);
+            // msgHandler_query(event);
+            // msgHandler_help(event);
+            // msgHandler_version(event);
+            
         default:
     }
 });
