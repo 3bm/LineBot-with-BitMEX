@@ -32,10 +32,16 @@
 # Difference between room and group
 https://developers.line.me/en/docs/messaging-api/group-chats/
 
-# DOC連結
+# Line DOC連結
 https://github.com/boybundit/linebot
 https://developers.line.me/en/docs/messaging-api/overview/
 https://developers.line.me/en/docs/messaging-api/reference/
 
-# 管理頁面
+# Line 管理頁面
 https://developers.line.me/console/channel/1538431072/basic/
+
+# 使用Regexp global小事項
+https://siderite.blogspot.com/2011/11/careful-when-reusing-javascript-regexp.html
+
+# Unicode on Regexp using es6
+https://mathiasbynens.be/notes/es6-unicode-regex

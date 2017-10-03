@@ -24,16 +24,8 @@ module.exports = bot;
 
 utility.broadcast(`${emoji.get('umbrella_on_ground')}系統已啟動`);
 // 執行BitMEX相關程式
-// require('../BitMEX/BitMEX_realtime.js'); // 查價功能
+require('../BitMEX/BitMEX_realtime.js'); // 查價功能
 require('../BitMEX/BitMEX_realtimemd.js'); // 成交提醒
-
-// 管理line message
-const msgHandler_admin = require('./msgHandler_admin'); // admin專用
-const msgHandler_list = require('./msgHandler_list'); // 名單
-// const msgHandler_query = require('./msgHandler_query'); // 使用者查價
-// const msgHandler_help = require('./msgHandler_help');// 使用說明
-// const msgHandler_version = require('./msgHandler_version');// 版本資訊
-const msgHandler_test = require('./msgHandler_test'); 
 
 /**
  * process is terminated by Ctrl+C
@@ -71,7 +63,7 @@ function loadList() {
             utility.formattedLog('已載入清單');
         } catch (e) {
         }
-    }else{
+    } else {
         utility.formattedLog('無清單，使用預設值');
     }
 }
@@ -88,19 +80,13 @@ function saveList() {
 /**
  * Event
  */
-
+const handler_bot = require('./Handler/bot/');
+const handler_funny = require('./Handler/funny/');
 bot.on('message', function (event) {
-    switch (event.message.type) {
-        case 'text':
-            msgHandler_admin(event) ||
-            msgHandler_list(event) ||
-            msgHandler_test(event);
-            // msgHandler_query(event);
-            // msgHandler_help(event);
-            // msgHandler_version(event);
-            
-        default:
-    }
+    if (event.message.type == 'text') {
+        handler_bot.test(event, event.message.text);
+        handler_funny.test(event, event.message.text);
+    } 
 });
 
 /**

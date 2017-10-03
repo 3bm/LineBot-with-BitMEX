@@ -9,10 +9,10 @@ function broadcast(text) {
         console.log(`廣播人數:${start + userArr.length}/${global.list.user.length}`);
 
         // 取出Id
-        let userIdArr = userArr.map((ele)=>{
+        let userIdArr = userArr.map((ele) => {
             return ele.id;
         });
-        
+
         bot.multicast(userIdArr, text);
         start = start + 150;
     }
@@ -56,6 +56,5 @@ module.exports = {
     broadcast,
     print_percentage,
     delay,
-    formattedLog
-
+    formattedLog,
 }
