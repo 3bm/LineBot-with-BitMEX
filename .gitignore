@@ -39,6 +39,8 @@ list.json
 ws.log
 *test.js
 nextCommit.txt
+debug.log
+userdata.dat
 
 ################################################
 # Miscellaneous

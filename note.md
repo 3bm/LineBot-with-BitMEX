@@ -45,3 +45,18 @@ https://siderite.blogspot.com/2011/11/careful-when-reusing-javascript-regexp.htm
 
 # Unicode on Regexp using es6
 https://mathiasbynens.be/notes/es6-unicode-regex
+
+# js static member
+https://stackoverflow.com/questions/1535631/static-variables-in-javascript
+
+http://usejsdoc.org/tags-param.html
+
+https://robertnyman.com/2008/10/14/javascript-how-to-get-private-privileged-public-and-static-members-properties-and-methods/
+
+wired,prototype並不適合實作static member
+
+# js的static variable還在草擬階段
+http://2ality.com/2015/02/es6-classes-final.html
+這篇看不到static variable的用法
+https://stackoverflow.com/questions/28445693/how-do-i-make-a-public-static-field-in-an-es6-class
+在Stage 2有提到

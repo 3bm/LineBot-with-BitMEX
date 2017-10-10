@@ -22,7 +22,10 @@ function query(event, matchedStr) {
             let p1 = (tmp = /^\d+\.(\d+)$/ig.exec(matched.bidPrice)) ? tmp[1] : ''; // 取小數點後的數字
             let p2 = (tmp = /^\d+\.(\d+)$/ig.exec(matched.askPrice)) ? tmp[1] : '';
             let p = Math.max(p1.length, p2.length); // 小數點後o位
-            replyMsg = replyMsg + Number((matched.bidPrice + matched.askPrice) / 2).toFixed(p);
+            replyMsg = replyMsg + '[ Avg Price ] ' + Number((matched.bidPrice + matched.askPrice) / 2).toFixed(p) + '\n';
+
+            replyMsg = replyMsg + '[ Ask Price ] ' + matched.askPrice + '\n';
+            replyMsg = replyMsg + '[ Bid Price ] ' + matched.bidPrice + '\n';
         } else {
             // NULL
             replyMsg = replyMsg + emoji.get('heavy_multiplication_x'); // 叉叉X圖案

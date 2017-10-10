@@ -1,81 +1,23 @@
+global.userPool = []; // 初始化userPool
+require('../UserData/'); // 載入user資料
 const linebot = require('linebot');
 const settings = require('./settings');
 const fs = require('fs');
 const utility = require('./Utility');
 const path = require('path');
-const settingsFilename = './list.json';
 const emoji = require('node-emoji')
 
 /**
  * Initialize
  */
-
-var list = {
-    user: [],
-    group: [],
-    room: [],
-};
-loadList();
-
 const bot = linebot(settings);
-global.list = list;
 global.bot = bot;
 module.exports = bot;
 
 utility.broadcast(`${emoji.get('umbrella_on_ground')}系統已啟動`);
 // 執行BitMEX相關程式
-require('../BitMEX/BitMEX_realtime.js'); // 查價功能
-require('../BitMEX/BitMEX_realtimemd.js'); // 成交提醒
-
-/**
- * process is terminated by Ctrl+C
- */
-
-process.on('exit', (code) => {
-    console.log("process was terminated.");
-    // 儲存設定
-    saveList();
-});
-
-process.on('SIGINT', async (code) => {
-    // 強制等待
-    // await utility.delay(500);
-
-    // process離開前通知使用者
-    // utility.broadcast(`${emoji.get('closed_umbrella')}系統已關閉`);
-
-    // 強制等待
-    // await utility.delay(500);
-
-    process.exit();
-});
-
-/**
- * Load and Store list
- */
-
-function loadList() {
-    // 載入清單
-    if (fs.existsSync(settingsFilename)) {
-        try {
-            let fileText = fs.readFileSync(settingsFilename, 'utf8');
-            list = JSON.parse(fileText);
-            utility.formattedLog('已載入清單');
-        } catch (e) {
-        }
-    } else {
-        utility.formattedLog('無清單，使用預設值');
-    }
-}
-
-function saveList() {
-    try {
-        fs.writeFileSync(settingsFilename, JSON.stringify(list), 'utf8');
-        utility.formattedLog('已儲存清單');
-    } catch (e) {
-        console.log(e);
-    }
-}
+require('../BitMEX/BitMEX_realtime.js').open('wss://www.bitmex.com/realtime'); // 查價功能
+require('../BitMEX/BitMEX_realtimemd.js').open('wss://www.bitmex.com/realtimemd'); // 成交提醒
 
 /**
  * Event

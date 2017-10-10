@@ -1,23 +1,32 @@
+module.exports = {
+    broadcast,
+    print_percentage,
+    delay,
+};
+
 /**
- * 向使用者廣播訊息
+ * 向在userPool內和status=2的使用者廣播訊息
  */
 function broadcast(text) {
-    formattedLog(`broadcast start, text:${text}`);
+    console.log(`[BRC] broadcast start, text:${text}`);
 
     let userArr, start = 0;
-    while ((userArr = global.list.user.slice(start, start + 150)).length > 0) {
-        console.log(`廣播人數:${start + userArr.length}/${global.list.user.length}`);
+    while ((userArr = global.userPool.slice(start, start + 150)).length > 0) {
 
-        // 取出Id
-        let userIdArr = userArr.map((ele) => {
-            return ele.id;
+        // 取出status=2的Id
+        let userIdArr = userArr.filter(function(x) {                                
+            return x.status == 2;
+        }).map(function (x) {
+            return x.lineUserId;
         });
 
+        console.log(`[BRC] 廣播人數:${userIdArr.length}`);
         bot.multicast(userIdArr, text);
+
         start = start + 150;
     }
 
-    formattedLog(`broadcast end`);
+    console.log(`[BRC] broadcast end`);
 }
 
 /**
@@ -35,11 +44,11 @@ function print_percentage(perc) {
 /**
  * 格式化console.log
  */
-function formattedLog(str) {
-    const star = "*".repeat(40);
-    const padding = str.length > star.length ? 0 : parseInt((star.length - str.length) / 2);
-    console.log(star + '\n' + " ".repeat(padding) + str + '\n' + star);
-}
+// function formattedLog(str) {
+//     const star = "*".repeat(40);
+//     const padding = str.length > star.length ? 0 : parseInt((star.length - str.length) / 2);
+//     console.log(star + '\n' + " ".repeat(padding) + str + '\n' + star);
+// }
 
 /**
  * delay
@@ -50,11 +59,4 @@ function delay(ms) {
             resolve();
         }, ms)
     })
-}
-
-module.exports = {
-    broadcast,
-    print_percentage,
-    delay,
-    formattedLog,
 }

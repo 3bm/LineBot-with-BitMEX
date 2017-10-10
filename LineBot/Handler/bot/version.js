@@ -18,7 +18,7 @@ async function version(event) {
         `Process PID: ${process.pid}\n` +
         `Node.js Version: ${process.version}\n` +
         `Platform: ${platform}\n` +
-        "Source Code: NULL";
+        "Source Code: somewhere";
 
     event.reply(versionStr);
 }
