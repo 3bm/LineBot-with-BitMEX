@@ -21,4 +21,3 @@ async function api(event, matchedStr) {
     // verifyKey
     await user.verifyKey(apikey, secret);
 }
-// bot watch api wrOtu6Sj_sai0DGyA3iM2MxC kkIul0hzsrET9SoJ1o16U371ra5AmW5Z4zI4eFjJ6m3xG97T

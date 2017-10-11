@@ -4,6 +4,12 @@ const fetch = require('node-fetch');
 const moment = require('moment');
 const crypto = require('crypto');
 const wsc = require('../BitMEX/BitMEX_realtimemd.js');
+const fs = require('fs');
+const calTool = require('../Tool/');
+const wsc_realtime = require('../BitMEX/BitMEX_realtime.js'); // 查價用
+const emoji = require('node-emoji');
+
+const boundUnit = 2.50; // 標記價格浮動門檻，超過通知使用者
 
 class User extends Stream {
     /**
@@ -16,6 +22,9 @@ class User extends Stream {
         this.apikey = apikey;
         this.secret = secret;
         this.mutex = false;// start&stop&verifykey的mutex
+        // 使用者的BitMEX資料:execution,position,liquidation...
+        this.position = null;
+        this.execution = null;
     }
 
     /**
@@ -28,7 +37,72 @@ class User extends Stream {
             .digest('hex');
     }
 
+    /**
+     * CheckROE - 與上次的收益對照並通知使用者
+     */
+    ckeckROE(symbol) {
+        // 取得目前價格
+        let matched = wsc_realtime.quote.find((ele) => {
+            return ele.symbol == symbol;
+        });
+        // if (!matched) return;
 
+        // 獲利計算
+        let idx = this.position.findIndex((ele) => {
+            return ele.symbol == symbol;
+        });
+
+        let ele = this.position[idx];
+        let roe_ask = calTool.roe(ele.openingCost < 0 ? 0 : 1, ele.openingQty, ele.avgCostPrice, matched.askPrice, ele.leverage);
+        let roe_bid = calTool.roe(ele.openingCost < 0 ? 0 : 1, ele.openingQty, ele.avgCostPrice, matched.bidPrice, ele.leverage);
+        let roe_mark = calTool.roe(ele.openingCost < 0 ? 0 : 1, ele.openingQty, ele.avgCostPrice, ele.markPrice, ele.leverage);
+
+        // 提醒使用者
+        let notify = () => {
+            let profitDiff = Number(roe_mark.roe - ele.lastMarkROE).toFixed(2);
+            let str;
+            if (profitDiff > 0) {
+                str = `${emoji.get('arrow_up')}獲利上升 ${profitDiff} % ${emoji.get('arrow_up')}\n`
+            } else {
+                str = `${emoji.get('arrow_down')}獲利下降 ${profitDiff} % ${emoji.get('arrow_down')}\n`
+            }
+            str = str + `[ 標記價格 ] ${ele.lastMarkPrice} -> ${ele.markPrice} \n\n`;
+
+            str = str +
+                `[ Symbol ] ${ele.symbol}\n` +
+                `[ 開倉價格 ] ${ele.avgCostPrice}\n` +
+                `[ 　槓桿　 ] ${ele.leverage}\n` +
+                `[ 強平價格 ] ${ele.liquidationPrice}\n` +
+                `[ 　獲利　 ]\n` +
+                `${emoji.get('cloud')}Ask : ${roe_ask.xbtGain} XBT, ${roe_ask.roe} %\n` +
+                `${emoji.get('cloud')}Bid : ${roe_bid.xbtGain} XBT, ${roe_bid.roe} %\n` +
+                `${emoji.get('cloud')}Mark: ${roe_mark.xbtGain} XBT, ${roe_mark.roe} %`;
+
+            bot.push(this.lineUserId, str);
+        }
+
+        // 依據標記價格作為提醒依據
+        let change = false;
+        while (ele.roeUpperBound < roe_mark.roe) {
+            // 超過上限，門檻往上調
+            ele.roeUpperBound = ele.roeUpperBound + boundUnit;
+            ele.roeLowerBound = ele.roeLowerBound + boundUnit;
+            change = true;
+        }
+        while (ele.roeLowerBound > roe_mark.roe) {
+            // 超過下限，門檻往下調
+            ele.roeUpperBound = ele.roeUpperBound - boundUnit;
+            ele.roeLowerBound = ele.roeLowerBound - boundUnit;
+            change = true;
+        }
+        // 提醒使用者
+        if (change) {
+            notify();
+            // 紀錄觸發門檻時的標記價格
+            ele.lastMarkROE = roe_mark.roe;
+            ele.lastMarkPrice = ele.markPrice;
+        }
+    }
 
     /**
      * Auth - 在已開啟的stream上發送auth request
@@ -124,7 +198,64 @@ class User extends Stream {
                     await this.stop();
                 } else {
                     // 若無error呼叫對應function處理payload
-                    //console.log(payload);
+                    if (payload.table == 'position') {
+
+                        if (payload.action == 'partial') {
+                            // 初始化postion，且只保留部分資料
+                            this.position = payload.data.filter(function (x) {
+                                return x.avgCostPrice;
+                            }).map((ele) => {
+                                // 必要資料
+                                return {
+                                    symbol: ele.symbol,
+                                    avgCostPrice: ele.avgCostPrice,
+                                    markPrice: ele.markPrice,
+                                    leverage: ele.leverage,
+                                    openingCost: ele.openingCost,
+                                    openingQty: ele.openingQty,
+                                    avgCostPrice: ele.avgCostPrice,
+                                    liquidationPrice: ele.liquidationPrice,
+                                    // 收益門檻，以便通知使用者，初始值為+-boundUnit
+                                    roeUpperBound: boundUnit,
+                                    roeLowerBound: -boundUnit,
+                                    lastMarkROE: 0.0,
+                                    lastMarkPrice: ele.avgCostPrice,
+                                };
+                            });
+
+                            // 告知使用者目前倉位情況
+                            let str = `${emoji.get('shamrock')}持有合約${emoji.get('shamrock')}\n`;
+                            this.position.map((ele, idx) => {
+                                str = str +
+                                    `[ Symbol ] ${ele.symbol}\n` +
+                                    `[ 開倉價格 ] ${ele.avgCostPrice}\n` +
+                                    `[ 標記價格 ] ${ele.markPrice}\n` +
+                                    `[ 　槓桿　 ] ${ele.leverage}\n` +
+                                    `[ 強平價格 ] ${ele.liquidationPrice}\n` +
+                                    ((idx == this.position.length - 1) ? '' : '\n');
+                            });
+                            bot.push(this.lineUserId, str);
+
+                        } else if (payload.action == 'update') {
+                            // 倉位更新
+
+                            // 合併新資料
+                            let data = payload.data[0];
+                            if (this.position === null) { // 不曉得為何第一次會取到null
+                                console.log(idx, this.position);
+                            }
+                            let idx = this.position.findIndex((ele) => {
+                                return ele.symbol == data.symbol;
+                            });
+                            this.position[idx] = Object.assign(this.position[idx], data);
+
+                            // 與歷史紀錄對照
+                            this.ckeckROE(data.symbol);
+                        }
+                    }
+                    if (payload.table == 'execution') {
+                        // 省略~
+                    }
                 }
             };
         }
