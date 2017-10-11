@@ -1,22 +1,30 @@
 // BitMEX成交提醒系統
 // wss://www.bitmex.com/realtimemd
-const utility = require('../LineBot/Utility.js');
+const utility = require('../LineBot/Utility');
 const WebSocketClient = require('./WebSocketClient.js');
 const emoji = require('node-emoji')
 const wsc = new WebSocketClient();
 module.exports = wsc;
 
-wsc.open('wss://www.bitmex.com/realtimemd');
+// wsc.open('wss://www.bitmex.com/realtimemd');
 
 // 初始程序
-wsc.init = function () {
-    // 訂閱BitMEX特定頻道
-
-    // shared variable 給該模組之外的程式使用
-    // this.quote = [];
-
+wsc.init = async function () {
     // 向使用者廣播已上線
     utility.broadcast(`${emoji.get('white_check_mark')}成交提醒功能已上線`);
+
+    await utility.delay(1000);
+
+    // 回復使用者連線狀態
+    global.userPool.map(async (user) => {
+        // 上次的狀態是連線中或是已連線
+        if (user.status == 1 || user.status == 2) {
+            // 重設連線狀態並連線
+            user.status = 0;
+            await user.start();
+        }
+    });
+
 }
 
 // ONOPEN
@@ -37,23 +45,5 @@ wsc.onreconnect = function () {
 
 // ONMESSAGE
 wsc.onmessage = function (data, flags, number) {
-
-}
-
-/**
- * 發送 BitMEX 訊息相關Function 
- */
-
-// 訂閱訊息
-wsc.subscribe = function () {
-    let arr = [];
-    for (var i = 0; i < arguments.length; i++) {
-        arr.push(arguments[i]);
-    }
-    this.sendCommand('subscribe', arr)
-}
-
-// 發送基本指令
-wsc.sendCommand = function (op, args = []) {
-    this.send(JSON.stringify({ op, args }));
+    console.log(data, flags, number);
 }

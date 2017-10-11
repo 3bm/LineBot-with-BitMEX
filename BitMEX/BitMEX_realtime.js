@@ -1,12 +1,12 @@
 // BitMEX查價系統
 // wss://www.bitmex.com/realtime
-const utility = require('../LineBot/Utility.js');
+const utility = require('../LineBot/Utility');
 const WebSocketClient = require('./WebSocketClient.js');
 const emoji = require('node-emoji')
 const wsc = new WebSocketClient();
 module.exports = wsc;
 
-wsc.open('wss://www.bitmex.com/realtime');
+// wsc.open('wss://www.bitmex.com/realtime');
 
 // 初始程序
 wsc.init = function () {
