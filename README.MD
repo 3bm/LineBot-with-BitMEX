@@ -1,38 +1,53 @@
 # BitMEX Line Bot
 即時查詢BitMEX價格
+Get latest contract details from BitMEX.
 
-# 需求
-* node.js 
+![](./pic/demo)
+
+# 需求 Requirement
+* Node.js 
     * version > 7.10
-* Line bot 帳號 
+* Line Bot Account 
     * 參考 `LINE BOT 實戰 ( 原理篇 )`
-# 使用方法
-#### 1. 新增/LineBot/settings.js，內容為
+
+# 安裝 Install
+```shell
+npm install
+```
+
+# 設定 Setting
+Add new file named `settings.js` under `LineBot`folder
 ```javascript=
 module.exports = {
-    "channelId": "xxxxx",
-    "channelSecret": "xxxxxx",
-    "channelAccessToken": "xxxxxxx"
+    "channelId": "yourLineBotChannelId",
+    "channelSecret": "yourLineBotChannelSecret",
+    "channelAccessToken": "yourLineBotChannelAccessToken"
 }
 ```
-#### 2. 啟動Bot
-```javascript=
-npm i
-npm start
-```
-![](./pic/2-1)
+
+# 使用方法 Usage
 
 ```shell=
 ngrok http 3000
 ```
- 參考 `不必真的架站也能-5-分鐘實機體驗`
 ![](./pic/2-3)
- 
+
+Put "Forward URL" into Line "Webhook URL". Like this:
+
 ![](./pic/2-2)
 
+And then:
+```shell
+npm start
+```
+> 參考 `不必真的架站也能-5-分鐘實機體驗`
 
 # DEMO
-![](./pic/demo)
+
+QR code of my Line bot:
+![](./pic/0pyMi1TFEu)
+
+Add my bot as a friend and type "bot help" for more information.
 
 # 參考資料
 * [linebot](https://github.com/boybundit/linebot)
