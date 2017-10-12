@@ -1,6 +1,6 @@
 # BitMEX Line Bot
-即時查詢BitMEX價格
-Get latest contract details from BitMEX.
+即時查詢BitMEX價格<br/>
+Get latest contract details from BitMEX by using Line Bot.<br/>
 
 ![](./pic/demo)
 
@@ -16,7 +16,7 @@ npm install
 ```
 
 # 設定 Setting
-Add new file named `settings.js` under `LineBot`folder
+Add new file named `settings.js` containing the following text under `LineBot` folder.  
 ```javascript=
 module.exports = {
     "channelId": "yourLineBotChannelId",
@@ -40,11 +40,10 @@ And then:
 ```shell
 npm start
 ```
-> 參考 `不必真的架站也能-5-分鐘實機體驗`
 
 # DEMO
 
-QR code of my Line bot:
+QR code of my Line bot:<br/>
 ![](./pic/0pyMi1TFEu)
 
 Add my bot as a friend and type "bot help" for more information.
