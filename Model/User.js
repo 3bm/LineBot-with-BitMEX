@@ -1,15 +1,15 @@
 // class User的方法常和wsc,global.bot,class Stream交錯使用，有點雜
 const Stream = require('./Stream.js');
+const Position = require('./Position.js');
+const Execution = require('./Execution.js');
+
 const fetch = require('node-fetch');
 const moment = require('moment');
 const crypto = require('crypto');
-const wsc = require('../BitMEX/BitMEX_realtimemd.js');
-const fs = require('fs');
-const calTool = require('../Tool/');
-const wsc_realtime = require('../BitMEX/BitMEX_realtime.js'); // 查價用
 const emoji = require('node-emoji');
+const fs = require('fs');
 
-const boundUnit = 2.50; // 標記價格浮動門檻，超過通知使用者
+const wsc = require('../BitMEX/BitMEX_realtimemd.js');
 
 class User extends Stream {
     /**
@@ -21,10 +21,10 @@ class User extends Stream {
         this.lineUserId = lineUserId;
         this.apikey = apikey;
         this.secret = secret;
-        this.mutex = false;// start&stop&verifykey的mutex
-        // 使用者的BitMEX資料:execution,position,liquidation...
-        this.position = null;
-        this.execution = null;
+        this.mutex = false;// start & stop & verifykey 的mutex
+        // BitMEX回傳的個人資料:execution,position...
+        this.position = new Position(lineUserId);
+        this.execution = new Execution(lineUserId);
     }
 
     /**
@@ -35,73 +35,6 @@ class User extends Stream {
             .createHmac('sha256', API_SECRET)
             .update(VERB + PATH + NONCE)
             .digest('hex');
-    }
-
-    /**
-     * CheckROE - 與上次的收益對照並通知使用者
-     */
-    ckeckROE(symbol) {
-        // 取得目前價格
-        let matched = wsc_realtime.quote.find((ele) => {
-            return ele.symbol == symbol;
-        });
-        // if (!matched) return;
-
-        // 獲利計算
-        let idx = this.position.findIndex((ele) => {
-            return ele.symbol == symbol;
-        });
-
-        let ele = this.position[idx];
-        let roe_ask = calTool.roe(ele.openingCost < 0 ? 0 : 1, ele.openingQty, ele.avgCostPrice, matched.askPrice, ele.leverage);
-        let roe_bid = calTool.roe(ele.openingCost < 0 ? 0 : 1, ele.openingQty, ele.avgCostPrice, matched.bidPrice, ele.leverage);
-        let roe_mark = calTool.roe(ele.openingCost < 0 ? 0 : 1, ele.openingQty, ele.avgCostPrice, ele.markPrice, ele.leverage);
-
-        // 提醒使用者
-        let notify = () => {
-            let profitDiff = Number(roe_mark.roe - ele.lastMarkROE).toFixed(2);
-            let str;
-            if (profitDiff > 0) {
-                str = `${emoji.get('arrow_up')}獲利上升 ${profitDiff} % ${emoji.get('arrow_up')}\n`
-            } else {
-                str = `${emoji.get('arrow_down')}獲利下降 ${profitDiff} % ${emoji.get('arrow_down')}\n`
-            }
-            str = str + `[ 標記價格 ] ${ele.lastMarkPrice} -> ${ele.markPrice} \n\n`;
-
-            str = str +
-                `[ Symbol ] ${ele.symbol}\n` +
-                `[ 開倉價格 ] ${ele.avgCostPrice}\n` +
-                `[ 　槓桿　 ] ${ele.leverage}\n` +
-                `[ 強平價格 ] ${ele.liquidationPrice}\n` +
-                `[ 　獲利　 ]\n` +
-                `${emoji.get('cloud')}Ask : ${roe_ask.xbtGain} XBT, ${roe_ask.roe} %\n` +
-                `${emoji.get('cloud')}Bid : ${roe_bid.xbtGain} XBT, ${roe_bid.roe} %\n` +
-                `${emoji.get('cloud')}Mark: ${roe_mark.xbtGain} XBT, ${roe_mark.roe} %`;
-
-            bot.push(this.lineUserId, str);
-        }
-
-        // 依據標記價格作為提醒依據
-        let change = false;
-        while (ele.roeUpperBound < roe_mark.roe) {
-            // 超過上限，門檻往上調
-            ele.roeUpperBound = ele.roeUpperBound + boundUnit;
-            ele.roeLowerBound = ele.roeLowerBound + boundUnit;
-            change = true;
-        }
-        while (ele.roeLowerBound > roe_mark.roe) {
-            // 超過下限，門檻往下調
-            ele.roeUpperBound = ele.roeUpperBound - boundUnit;
-            ele.roeLowerBound = ele.roeLowerBound - boundUnit;
-            change = true;
-        }
-        // 提醒使用者
-        if (change) {
-            notify();
-            // 紀錄觸發門檻時的標記價格
-            ele.lastMarkROE = roe_mark.roe;
-            ele.lastMarkPrice = ele.markPrice;
-        }
     }
 
     /**
@@ -143,6 +76,9 @@ class User extends Stream {
     subscribe() {
         return new Promise((resolve, reject) => {
 
+            // clear previous data
+            this.position.clear();
+
             // 收到response後才算完成整個動作
             this.onmsg = (payload) => {
                 console.log(`[SYS] Subscription response from Stream ( ID=${this.streamId} TOPIC=${this.streamTopic} )`);
@@ -150,6 +86,12 @@ class User extends Stream {
 
                 // success
                 if (payload.success && payload.success == true) return resolve(true);
+
+                // BitMEX可能略過success訊息直接傳data
+                if (payload.table == 'position') {
+                    this.position.add(payload);
+                    return resolve(true);
+                }
 
                 // failed
                 return resolve(false);
@@ -189,8 +131,10 @@ class User extends Stream {
             this.mutex = false;
             return await this.stop();
         } else {
+
             // Everthing is ok, set message handler.
             this.onmsg = async (payload) => {
+
                 if (payload.error) {
                     // 收到error，可能是api key被刪除，通知user後關閉stream
                     this.tellUser('Access Token expired for subscription. Service will automatically stop immediately.');
@@ -199,62 +143,9 @@ class User extends Stream {
                 } else {
                     // 若無error呼叫對應function處理payload
                     if (payload.table == 'position') {
-
-                        if (payload.action == 'partial') {
-                            // 初始化postion，且只保留部分資料
-                            this.position = payload.data.filter(function (x) {
-                                return x.avgCostPrice;
-                            }).map((ele) => {
-                                // 必要資料
-                                return {
-                                    symbol: ele.symbol,
-                                    avgCostPrice: ele.avgCostPrice,
-                                    markPrice: ele.markPrice,
-                                    leverage: ele.leverage,
-                                    openingCost: ele.openingCost,
-                                    openingQty: ele.openingQty,
-                                    avgCostPrice: ele.avgCostPrice,
-                                    liquidationPrice: ele.liquidationPrice,
-                                    // 收益門檻，以便通知使用者，初始值為+-boundUnit
-                                    roeUpperBound: boundUnit,
-                                    roeLowerBound: -boundUnit,
-                                    lastMarkROE: 0.0,
-                                    lastMarkPrice: ele.avgCostPrice,
-                                };
-                            });
-
-                            // 告知使用者目前倉位情況
-                            let str = `${emoji.get('shamrock')}持有合約${emoji.get('shamrock')}\n`;
-                            this.position.map((ele, idx) => {
-                                str = str +
-                                    `[ Symbol ] ${ele.symbol}\n` +
-                                    `[ 開倉價格 ] ${ele.avgCostPrice}\n` +
-                                    `[ 標記價格 ] ${ele.markPrice}\n` +
-                                    `[ 　槓桿　 ] ${ele.leverage}\n` +
-                                    `[ 強平價格 ] ${ele.liquidationPrice}\n` +
-                                    ((idx == this.position.length - 1) ? '' : '\n');
-                            });
-                            bot.push(this.lineUserId, str);
-
-                        } else if (payload.action == 'update') {
-                            // 倉位更新
-
-                            // 合併新資料
-                            let data = payload.data[0];
-                            if (this.position === null) { // 不曉得為何第一次會取到null
-                                console.log(idx, this.position);
-                            }
-                            let idx = this.position.findIndex((ele) => {
-                                return ele.symbol == data.symbol;
-                            });
-                            this.position[idx] = Object.assign(this.position[idx], data);
-
-                            // 與歷史紀錄對照
-                            this.ckeckROE(data.symbol);
-                        }
-                    }
-                    if (payload.table == 'execution') {
-                        // 省略~
+                        this.position.add(payload);
+                    } else if (payload.table == 'execution') {
+                        this.execution.add(payload);
                     }
                 }
             };
@@ -316,7 +207,6 @@ class User extends Stream {
         // 無效
         if (res.error) return this.tellUser('API key or secret is invalid.');
 
-
         // 有效，儲存
         this.apikey = apikey;
         this.secret = secret;
@@ -334,8 +224,6 @@ class User extends Stream {
 
 
 module.exports = User;
-
-
 
 /**
  * onmessage - 處理BitMEX傳過來的資料

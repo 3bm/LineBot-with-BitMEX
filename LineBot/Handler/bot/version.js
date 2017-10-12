@@ -18,8 +18,7 @@ async function version(event) {
         `Process PID: ${process.pid}\n` +
         `Node.js Version: ${process.version}\n` +
         `Platform: ${platform}\n` +
-        `Donate: ETH 0x7bd3361E0c3e4b53152779B53570229a3695FF28\n` +
-        "Source Code: somewhere";
+        `Donate: ETH Addr 0x7bd3361E0c3e4b53152779B53570229a3695FF28\n`;
 
     event.reply(versionStr);
 }

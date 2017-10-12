@@ -8,11 +8,11 @@ const WebSocket = require('ws');
 const fs = require('fs');
 const moment = require('moment');
 
-function WebSocketClient() {
+function WebSocketClient(autoReconnectInterval = 60 * 1000, reconnectCountLimit = 10) {
     this.number = 0;	// Message number
-    this.autoReconnectInterval = 2 * 60 * 1000;	// ms
+    this.autoReconnectInterval = autoReconnectInterval;	// ms
     this.reconnectCount = 0;
-    this.reconnectCountLimit = 15;
+    this.reconnectCountLimit = reconnectCountLimit;
 }
 
 WebSocketClient.prototype.open = function (url) {

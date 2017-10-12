@@ -3,7 +3,7 @@
 const utility = require('../LineBot/Utility');
 const WebSocketClient = require('./WebSocketClient.js');
 const emoji = require('node-emoji')
-const wsc = new WebSocketClient();
+const wsc = new WebSocketClient(30 * 1000, 30);
 module.exports = wsc;
 
 // wsc.open('wss://www.bitmex.com/realtime');
@@ -52,11 +52,11 @@ wsc.onmessage = function (data, flags, number) {
 
     // 第n>1次接收到資料
     if (rev.action == 'insert') {
-        rev.data.map((ele)=>{
-            let idx =  this.quote.findIndex((quote_ele) => { return quote_ele.symbol == ele.symbol; });
+        rev.data.map((ele) => {
+            let idx = this.quote.findIndex((quote_ele) => { return quote_ele.symbol == ele.symbol; });
             this.quote[idx] = Object.assign({}, ele);  // 複製收到的資料
             // console.log(this.quote[this.quote.length-1])
-        })        
+        })
     }
 
 }

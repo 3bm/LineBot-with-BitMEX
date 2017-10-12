@@ -25,7 +25,7 @@ function query(event, matchedStr) {
             replyMsg = replyMsg + '[ Avg Price ] ' + Number((matched.bidPrice + matched.askPrice) / 2).toFixed(p) + '\n';
 
             replyMsg = replyMsg + '[ Ask Price ] ' + matched.askPrice + '\n';
-            replyMsg = replyMsg + '[ Bid Price ] ' + matched.bidPrice + '\n';
+            replyMsg = replyMsg + '[ Bid Price ] ' + matched.bidPrice;
         } else {
             // NULL
             replyMsg = replyMsg + emoji.get('heavy_multiplication_x'); // 叉叉X圖案
