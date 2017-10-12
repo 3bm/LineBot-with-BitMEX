@@ -3,7 +3,7 @@
 const utility = require('../LineBot/Utility');
 const WebSocketClient = require('./WebSocketClient.js');
 const emoji = require('node-emoji')
-const wsc = new WebSocketClient();
+const wsc = new WebSocketClient(30 * 1000, 30);
 module.exports = wsc;
 
 // wsc.open('wss://www.bitmex.com/realtimemd');
@@ -11,7 +11,7 @@ module.exports = wsc;
 // 初始程序
 wsc.init = async function () {
     // 向使用者廣播已上線
-    utility.broadcast(`${emoji.get('white_check_mark')}成交提醒功能已上線`);
+    utility.broadcast(`${emoji.get('white_check_mark')}提醒功能已上線`);
 
     await utility.delay(1000);
 
@@ -40,7 +40,7 @@ wsc.onclose = function (e) {
 // ONRECONNECT
 wsc.onreconnect = function () {
     // 向使用者廣播已斷線，重新連線中
-    utility.broadcast(`${emoji.get('warning')}成交提醒功能已離線，${this.autoReconnectInterval / (60 * 1000)}分後重新連線\n${emoji.get('warning')}重試次數:${this.reconnectCount}/${this.reconnectCountLimit}`);
+    utility.broadcast(`${emoji.get('warning')}提醒功能已離線，${this.autoReconnectInterval / (60 * 1000)}分後重新連線\n${emoji.get('warning')}重試次數:${this.reconnectCount}/${this.reconnectCountLimit}`);
 }
 
 // ONMESSAGE
