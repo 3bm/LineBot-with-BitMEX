@@ -109,8 +109,9 @@ class User extends Stream {
     /**
      * Start - open stream & subscribe & receive important data
      * usage: await start()
+     * @param {number} bound - position物件的bound參數，使用者指定的標記價格浮動門檻
      */
-    async start() {
+    async start(bound) {
         // mutex
         if (this.mutex) return this.tellUser('請等待上一個動作完成');
         this.mutex = true;
@@ -132,7 +133,10 @@ class User extends Stream {
             return await this.stop();
         } else {
 
-            // Everthing is ok, set message handler.
+            // Set bound
+            this.position.setBound(bound);
+
+            // Set message handler.
             this.onmsg = async (payload) => {
 
                 if (payload.error) {

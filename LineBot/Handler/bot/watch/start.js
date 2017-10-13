@@ -1,5 +1,5 @@
 const wrapper = require('../../wrapper.js');
-module.exports = new wrapper(/^start$/ig, start);
+module.exports = new wrapper(/^start\s?([\d\.]+)?$/ig, start);
 
 const User = require('../../../../Model/User');
 
@@ -15,5 +15,6 @@ async function start(event, matchedStr) {
     var user = global.userPool[idx];
 
     // start
-    await user.start();
+    let bound = matchedStr;
+    await user.start(bound);
 }

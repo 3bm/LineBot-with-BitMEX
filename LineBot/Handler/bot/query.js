@@ -1,19 +1,27 @@
-// 使用者查詢oo幣價位
-const wsc = require('../../../BitMEX/BitMEX_realtime.js'); // 提供查價
+// 使用者查詢價位
+const wsc = require('../../../BitMEX/BitMEX_realtime.js'); // 提供BitMEX查價
+const coinmarket = require('../../../Coinmarket/'); // 提供CoinMarket查價
+
 const emoji = require('node-emoji');
 
 const wrapper = require('../wrapper.js');
 module.exports = new wrapper(/^([A-Za-z0-9]+)$/ig, query);
 
 function query(event, matchedStr) {
-    let userinput = matchedStr.toUpperCase();
+    let userinput = matchedStr.toUpperCase(),
+        matched;
 
-    // 使用者輸入使否屬於BitMEX提供的幣種之一
-    let matched = wsc.quote.find((ele) => {
+    /**
+     * 查詢 BitMEX
+     */
+
+    // 使用者輸入是否屬於BitMEX提供的合約之一
+    matched = wsc.quote.find((ele) => {
         return ele.symbol == userinput;
     })
-    // 是，查詢後回應使用者
+
     if (typeof matched != 'undefined') {
+        // 是，查詢後回應使用者
         let replyMsg = `[ ${userinput} ]\n`;
 
         // 如果為NULL代表該幣已下線
@@ -32,5 +40,29 @@ function query(event, matchedStr) {
         }
 
         event.reply(replyMsg);
+        return;
+    }
+
+    /**
+    * 查詢CoinMarket
+    */
+
+    // 使用者輸入幣種是否可在coinmarket上查詢到
+    matched = coinmarket().find((ele) => {
+        let name = (ele.name).toUpperCase(),
+            symbol = (ele.symbol).toUpperCase();
+        return (name == userinput) || (symbol == userinput);
+    });
+
+    if (typeof matched != 'undefined') {
+
+        // 是，查詢後回應使用者
+        let replyMsg = `[ ${matched.name} ]\n` +
+            `[ USD ] ${matched.price_usd}\n` +
+            `[ TWD ] ${matched.price_twd}\n` +
+            `[ BTC ] ${matched.price_btc}`;
+
+        event.reply(replyMsg);
+        return;
     }
 }

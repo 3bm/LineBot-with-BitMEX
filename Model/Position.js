@@ -7,12 +7,28 @@ class Position {
     constructor(lineUserId) {
         this.position = {};
         this.lineUserId = lineUserId;
+        this.bound = 10.0; // %,標記價格浮動門檻 
     }
 
     /**
      * public function
      */
 
+    /**
+     * setBound - 設定標記價格浮動門檻
+    */
+    setBound(bound){
+        try{
+            bound = Number(bound);
+            if (bound > 0) this.bound = bound;
+        }catch(e){
+            // Bound is NaN, do nothing
+        }
+    }
+
+    /**
+     * clear - 清空position
+     */
     clear() {
         this.position = {};
     }
@@ -136,8 +152,10 @@ class Position {
                 `[ 　槓桿　 ] ${ele.leverage} x\n` +
                 `[ 目前獲利 ] ${profit.roe > 0 ? '+' : ''}${Number(profit.xbtGain).toFixed(4)} XBT\n` +
                 `  　　　　   ${profit.roe > 0 ? '+' : ''}${Number(profit.roe).toFixed(2)} %\n` +
-                ((idx == openingContract.length - 1) ? '' : '\n');
+                ((idx == openingContract.length - 1) ? '\n' : '\n');
         });
+
+        str = str + `[ 提醒門檻 ] ${Number(this.bound).toFixed(2)} %`;
 
         bot.push(this.lineUserId, str);
     }
@@ -205,12 +223,11 @@ class Position {
             profit_bidPrice = tool.profit(data.currentQty > 0 ? 0 : 1, data.currentQty, data.avgCostPrice, matched.bidPrice, data.leverage),
             profit_markPrice = tool.profit(data.currentQty > 0 ? 0 : 1, data.currentQty, data.avgCostPrice, data.markPrice, data.leverage);
 
-        // 依據上次標記價格作為基準與這次比較
-        const bound = 10.0; // %,標記價格浮動門檻   
+        // 依據上次標記價格作為基準與這次比較  
         if (
-            (profit_markPrice.roe <= data.lastROE - bound)
+            (profit_markPrice.roe <= data.lastROE - this.bound)
             ||
-            (profit_markPrice.roe >= data.lastROE + bound)
+            (profit_markPrice.roe >= data.lastROE + this.bound)
         ) {
             // 通知使用者
             this.informUserUpdatedPosition(symbol);
