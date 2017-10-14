@@ -8,14 +8,19 @@ module.exports = wsc;
 
 // wsc.open('wss://www.bitmex.com/realtime');
 
+// shared variable 給該模組之外的程式使用
+wsc.quote = [];
+wsc.liquidation = [];
+
 // 初始程序
 wsc.init = function () {
     // 訂閱BitMEX特定頻道
-    this.subscribe('quote');
+    this.subscribe('quote', 'liquidation');
     // this.subscribe('instrument:XBTUSD', 'instrument:XBTU17');
 
-    // shared variable 給該模組之外的程式使用
+    // reset
     this.quote = [];
+    this.liquidation = [];
 
     // 向使用者廣播已上線
     utility.broadcast(`${emoji.get('white_check_mark')}查價功能已上線`);
@@ -42,21 +47,41 @@ wsc.onmessage = function (data, flags, number) {
 
     let rev = JSON.parse(data);
 
-    // 防呆。非quote資料
-    if (rev.table != 'quote') return;
+    if (rev.table == 'quote') {
+        // quote資料
+        // 第一次接收到資料
+        if (rev.action == 'partial') {
+            this.quote = rev.data.slice(0, rev.data.length); // 複製收到的資料
+        }
 
-    // 第一次接收到資料
-    if (rev.action == 'partial') {
-        this.quote = rev.data.slice(0, rev.data.length); // 複製收到的資料
-    }
+        // 第n>1次接收到資料
+        if (rev.action == 'insert') {
+            rev.data.map((ele) => {
+                let idx = this.quote.findIndex((quote_ele) => { return quote_ele.symbol == ele.symbol; });
+                this.quote[idx] = Object.assign({}, ele);  // 複製收到的資料
+                // console.log(this.quote[this.quote.length-1])
+            })
+        }
+    } else if (rev.table == 'liquidation') {
+        // liquidation
+        // types:
+        // { orderID: 'guid',
+        //   symbol: 'symbol',
+        //   side: 'symbol',
+        //   price: 'float',
+        //   leavesQty: 'long' },
 
-    // 第n>1次接收到資料
-    if (rev.action == 'insert') {
-        rev.data.map((ele) => {
-            let idx = this.quote.findIndex((quote_ele) => { return quote_ele.symbol == ele.symbol; });
-            this.quote[idx] = Object.assign({}, ele);  // 複製收到的資料
-            // console.log(this.quote[this.quote.length-1])
-        })
+        if (rev.action == 'partial') {
+
+        } else if (rev.action == 'delete') {
+
+        } else if (rev.action == 'insert') {
+            console.log(ele);
+            rev.data.map((ele) => {
+                this.liquidation.push(ele);
+            })
+        }
+
     }
 
 }

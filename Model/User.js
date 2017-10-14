@@ -16,11 +16,12 @@ class User extends Stream {
      * User資料模型
      * @param {number} id - 該User的Line userId
      */
-    constructor(lineUserId, apikey = null, secret = null, status = 0) {
+    constructor(lineUserId, apikey = null, secret = null, status = 0, bound = 5.0) {
         super(status);
         this.lineUserId = lineUserId;
         this.apikey = apikey;
         this.secret = secret;
+        this.bound = bound; // %,標記價格浮動門檻 
         this.mutex = false;// start & stop & verifykey 的mutex
         // BitMEX回傳的個人資料:execution,position...
         this.position = new Position(lineUserId);
@@ -133,8 +134,15 @@ class User extends Stream {
             return await this.stop();
         } else {
 
+            // Save bound
+            try {
+                bound = Number(bound);
+                if (bound > 0) this.bound = bound;
+            } catch (e) {
+                // Bound is NaN, do nothing
+            }
             // Set bound
-            this.position.setBound(bound);
+            this.position.setBound(this.bound);
 
             // Set message handler.
             this.onmsg = async (payload) => {

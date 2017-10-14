@@ -12,13 +12,13 @@ async function version(event) {
     const platform = process.platform;
 
     let versionStr = "[ Version Info ]\n" +
-        "Last Update: 2017/09/30 \n" +
+        "Last Update: 2017/10/15 \n" +
         `Uptime: ${moment.duration({ seconds: process.uptime() }).humanize()}\n` +
         `CPU Temp: ${platform == 'linux' ? cpuTemperature.main + ' °C' : 'Unsupport'}\n` +
         `Process PID: ${process.pid}\n` +
         `Node.js Version: ${process.version}\n` +
         `Platform: ${platform}\n` +
-        `Donate: ETH Addr 0x7bd3361E0c3e4b53152779B53570229a3695FF28\n`;
+        `Donate: ETH Address 0x7bd3361E0c3e4b53152779B53570229a3695FF28\n`;
 
     event.reply(versionStr);
 }

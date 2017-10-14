@@ -7,7 +7,7 @@ class Position {
     constructor(lineUserId) {
         this.position = {};
         this.lineUserId = lineUserId;
-        this.bound = 10.0; // %,標記價格浮動門檻 
+        this.bound; // %,標記價格浮動門檻 
     }
 
     /**
@@ -17,13 +17,8 @@ class Position {
     /**
      * setBound - 設定標記價格浮動門檻
     */
-    setBound(bound){
-        try{
-            bound = Number(bound);
-            if (bound > 0) this.bound = bound;
-        }catch(e){
-            // Bound is NaN, do nothing
-        }
+    setBound(bound) {
+        this.bound = bound;
     }
 
     /**

@@ -5,11 +5,13 @@ const version = require('./version.js');
 const query = require('./query.js');
 const dev = require('./dev.js');
 const watch = require('./watch/');
+const group = require('./group/');
 
 module.exports = new wrapper(/^bot\s(.+)$/ig, bot);
 
 function bot(event, matchedStr) {
-    watch.test(event, matchedStr) ||
+    group.test(event, matchedStr) ||
+        watch.test(event, matchedStr) ||
         help.test(event, matchedStr) ||
         version.test(event, matchedStr) ||
         dev.test(event, matchedStr) ||

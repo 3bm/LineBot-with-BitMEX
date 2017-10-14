@@ -1,7 +1,8 @@
 // 使用者資料
 const fs = require('fs');
+const path = require('path');
 const User = require('../Model/User.js');
-const filepath = './userdata.dat';
+const filepath = path.resolve(__dirname, './userdata.json');
 const userPool = global.userPool;
 
 // load
@@ -13,7 +14,7 @@ try {
     raw = JSON.parse(raw);
 
     raw.map((user) => {
-        userPool.push(new User(user.lineUserId, user.apikey, user.secret, user.status));
+        userPool.push(new User(user.lineUserId, user.apikey, user.secret, user.status, user.bound));
     })
     console.log(`[SYS] 已創立${userPool.length}個User Object`);
 } catch (e) {
@@ -29,27 +30,13 @@ function save() {
             apikey: user.apikey,
             secret: user.secret,
             status: user.status,
+            bound: user.bound,
         });
     });
 
     fs.writeFileSync(filepath, JSON.stringify(raw), 'utf8');
 }
 
-/**
- * process is terminated by Ctrl+C
- */
-
-process.on('exit', () => {
-    console.log("[SYS] Process was terminated.");
-    save();
-});
-
-process.on('SIGINT', async () => {
-    // process離開前通知使用者
-    // utility.broadcast(`${emoji.get('closed_umbrella')}系統已關閉`);
-
-    // 強制等待
-    // await utility.delay(500);
-
-    process.exit();
-});
+module.exports = {
+    save,
+}
