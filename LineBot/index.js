@@ -18,7 +18,7 @@ global.bot = bot;
 module.exports = bot;
 
 utility.broadcast(`${emoji.get('umbrella_on_ground')}系統已啟動`);
-utility.broadcast(`${emoji.get('umbrella_on_ground')}新功能，請輸入bot help查看`);
+
 // 執行BitMEX相關程式
 require('../BitMEX/BitMEX_realtime.js').open('wss://www.bitmex.com/realtime'); // 查價功能
 require('../BitMEX/BitMEX_realtimemd.js').open('wss://www.bitmex.com/realtimemd'); // 成交提醒
