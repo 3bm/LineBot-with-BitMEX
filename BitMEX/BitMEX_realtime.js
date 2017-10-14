@@ -76,7 +76,7 @@ wsc.onmessage = function (data, flags, number) {
         } else if (rev.action == 'delete') {
 
         } else if (rev.action == 'insert') {
-            console.log(ele);
+            
             rev.data.map((ele) => {
                 this.liquidation.push(ele);
             })
