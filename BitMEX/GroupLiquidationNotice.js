@@ -32,21 +32,26 @@ setInterval(() => {
                 });
             }
 
-            str = str + `${data.symbol} ${data.side == 'Buy' ? '空倉被爆: 買入' : '多倉被爆: 賣出'} ${Qty} @ ${data.price}`;
+            if (data.side == 'Buy') {
+                str = str + `${data.symbol} 空倉被爆: 買入 ${Qty} @ ${data.price}`;
+            } else if (data.side == 'Sell') {
+                str = str + `${data.symbol} 多倉被爆: 賣出 ${Qty} @ ${data.price}`;
+            }
+
             if (idx != wsc.liquidation.length - 1) str = str + '\n';
         });
 
         // 嘲諷字串
         let arr = wsc.liquidation.map((data) => {
-            return Math.log(data.leavesQty);
+            return Math.log(data.leavesQty) / Math.log(10);
         });
 
         let max = Math.max(...arr);
-        if (max >= 4 && max < 6) { // 1w~100w
+        if (max >= 5 && max < 6) { // 10w~100w
             str = str + '\n｡:.ﾟヽ(*´∀`)ﾉﾟ.:｡';
         } else if (max >= 6 && max < 7) { // 100w~1000w
             str = str + '\n。･ﾟ･(つд`ﾟ)･ﾟ･';
-        } else if (max >= 7 && max < 8) {  // 1000w~1e
+        } else if (max >= 7) {  // 1000w~1e
             str = str + '\n (´;ω;`) ';
         }
 

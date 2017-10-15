@@ -7,7 +7,7 @@ const emoji = require('node-emoji');
 const wrapper = require('../wrapper.js');
 module.exports = new wrapper(/^([A-Za-z0-9]+)$/ig, query);
 
-function query(event, matchedStr) {
+async function query(event, matchedStr) {
     let userinput = matchedStr.toUpperCase(),
         matched;
 
@@ -61,6 +61,17 @@ function query(event, matchedStr) {
             `[ USD ] ${matched.price_usd}\n` +
             `[ TWD ] ${matched.price_twd}\n` +
             `[ BTC ] ${matched.price_btc}`;
+
+        // KYC多一項對ETH匯率
+        if (matched.symbol == 'knc') {
+            try {
+                let res = await fetch('https://api.coinmarketcap.com/v1/ticker/kyber-network/?convert=ETH');
+                res = await res.json();
+                replyMsg = replyMsg + `\n[ ETH ] ${res[0].price_eth}`
+            } catch (e) {
+                console.log(e)
+            }
+        }
 
         event.reply(replyMsg);
         return;
