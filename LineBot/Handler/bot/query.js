@@ -63,7 +63,7 @@ async function query(event, matchedStr) {
             `[ BTC ] ${matched.price_btc}`;
 
         // KYC多一項對ETH匯率
-        if (matched.symbol == 'knc') {
+        if (matched.symbol == 'KNC') {
             try {
                 let res = await fetch('https://api.coinmarketcap.com/v1/ticker/kyber-network/?convert=ETH');
                 res = await res.json();
