@@ -3,6 +3,7 @@ const wsc = require('../../../BitMEX/BitMEX_realtime.js'); // 提供BitMEX查價
 const coinmarket = require('../../../Coinmarket/'); // 提供CoinMarket查價
 
 const emoji = require('node-emoji');
+const fetch = require('node-fetch');
 
 const wrapper = require('../wrapper.js');
 module.exports = new wrapper(/^([A-Za-z0-9]+)$/ig, query);
