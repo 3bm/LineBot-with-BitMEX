@@ -1,5 +1,4 @@
 const linebot = require('linebot');
-const settings = require('./settings');
 const fs = require('fs');
 const path = require('path');
 const emoji = require('node-emoji')
