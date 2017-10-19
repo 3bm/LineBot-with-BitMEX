@@ -1,11 +1,10 @@
 // code參考:https://github.com/websockets/ws/wiki/Websocket-client-implementation-for-auto-reconnect
 // 新增功能
 // 1.在open和close內加入了Heartbeat
-// 2.紀錄open/close/reconnect/error事件，儲存成ws.log
+// 2.紀錄open/close/reconnect/error事件
 // 3.限制最大重連次數(reconnectCountLimit)，超過則強制終止process
 
 const WebSocket = require('ws');
-const fs = require('fs');
 const moment = require('moment');
 
 function WebSocketClient(autoReconnectInterval = 60 * 1000, reconnectCountLimit = 10) {
@@ -107,14 +106,9 @@ WebSocketClient.prototype.onclose = function (e) { /* this.log("WebSocketClient:
 WebSocketClient.prototype.onreconnect = function (e) { };
 
 // 紀錄open/close/reconnect/error等事件由WebSocketClient負責
-const logFilename = './ws.log';
 WebSocketClient.prototype.log = function (...text) {
     // 只顯示部分訊息
     console.log(text[0]);
-    // 紀錄完整訊息
-    fs.appendFile(logFilename, `${moment().format('YYYY-MM-DD hh:mm:ss')} ${JSON.stringify(text)}\n`, (err) => {
-        if (err) throw err;
-    });
 }
 
 module.exports = WebSocketClient;

@@ -1,0 +1,11 @@
+[ ⚡️指令⚡️ ]
+[ BitMEX合約 ] bot {contract}
+[ Coinmarket查詢 ] bot {coin}
+[ Poloniex查詢 ] bot polo {coin}
+[ Bittrex查詢 ] bot bitt {coin}
+[ BitMEX REKT ] bot group rekt
+[ BitMEX 獲利追蹤 ] 
+ - 添加KEY bot watch api {apikey} {secret}
+ - 開始 bot watch start {percentage}
+ - 停止 bot watch stop
+[ 程式資訊 ] bot info

@@ -1,23 +1,19 @@
 // 使用者查詢價位
 const wsc = require('../../../BitMEX/BitMEX_realtime.js'); // 提供BitMEX查價
-const coinmarket = require('../../../Coinmarket/'); // 提供CoinMarket查價
+const coinmarket = require('../../../Market/coinmarket'); // 提供CoinMarket查價
 
-const emoji = require('node-emoji');
 const fetch = require('node-fetch');
 
 const wrapper = require('../wrapper.js');
 module.exports = new wrapper(/^([A-Za-z0-9]+)$/ig, query);
 
 async function query(event, matchedStr) {
-    let userinput = matchedStr.toUpperCase(),
-        matched;
-
+    let userinput = matchedStr.toUpperCase();
+        
     /**
-     * 查詢 BitMEX
+     * 使用者輸入是否屬於BitMEX提供的合約之一
      */
-
-    // 使用者輸入是否屬於BitMEX提供的合約之一
-    matched = wsc.quote.find((ele) => {
+    let matched = wsc.quote.find((ele) => {
         return ele.symbol == userinput;
     })
 
@@ -32,23 +28,19 @@ async function query(event, matchedStr) {
             let p2 = (tmp = /^\d+\.(\d+)$/ig.exec(matched.askPrice)) ? tmp[1] : '';
             let p = Math.max(p1.length, p2.length); // 小數點後o位
             replyMsg = replyMsg + '[ Avg Price ] ' + Number((matched.bidPrice + matched.askPrice) / 2).toFixed(p) + '\n';
-
             replyMsg = replyMsg + '[ Ask Price ] ' + matched.askPrice + '\n';
             replyMsg = replyMsg + '[ Bid Price ] ' + matched.bidPrice;
-        } else {
-            // NULL
-            replyMsg = replyMsg + emoji.get('heavy_multiplication_x'); // 叉叉X圖案
-        }
 
-        event.reply(replyMsg);
+            event.reply(replyMsg);
+        };
         return;
     }
 
     /**
-    * 查詢CoinMarket
+    * 非BitMEX合約之一，查詢: CoinMarket (x-usd/twd/btc)
     */
 
-    // 使用者輸入幣種是否可在coinmarket上查詢到
+    // coinmarket
     matched = coinmarket().find((ele) => {
         let name = (ele.name).toUpperCase(),
             symbol = (ele.symbol).toUpperCase();
@@ -57,7 +49,6 @@ async function query(event, matchedStr) {
 
     if (typeof matched != 'undefined') {
 
-        // 是，查詢後回應使用者
         let replyMsg = `[ ${matched.name} ]\n` +
             `[ USD ] ${matched.price_usd}\n` +
             `[ TWD ] ${matched.price_twd}\n` +

@@ -35,13 +35,7 @@ lib-cov
 *.pid
 npm-debug.log
 settings.js
-list.json
-ws.log
-*test.js
 nextCommit.txt
-debug.log
-userdata.json
-groupdata.json
 
 ################################################
 # Miscellaneous

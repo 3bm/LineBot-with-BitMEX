@@ -1,23 +1,15 @@
-// 載入先前的設定檔
-global.userPool = []; // 初始化userPool
-global.groupPool = []; // 初始化userPool
-require('../Data/'); // 載入user&group資料
-
 const linebot = require('linebot');
 const settings = require('./settings');
 const fs = require('fs');
-const utility = require('./Utility');
 const path = require('path');
 const emoji = require('node-emoji')
 
 /**
- * Initialize
+ * Initialize LineBot
  */
 const bot = linebot(settings);
 global.bot = bot;
 module.exports = bot;
-
-utility.broadcast(`${emoji.get('umbrella_on_ground')}系統已啟動`);
 
 // 執行BitMEX相關程式
 require('../BitMEX/BitMEX_realtime.js').open('wss://www.bitmex.com/realtime'); // 查價功能
@@ -33,7 +25,7 @@ bot.on('message', function (event) {
     if (event.message.type == 'text') {
         handler_bot.test(event, event.message.text);
         // handler_funny.test(event, event.message.text);
-    } 
+    }
 });
 
 /**
@@ -62,3 +54,4 @@ bot.on('postback', function (event) {
 bot.on('beacon', function (event) {
     // event.reply('beacon: ' + event.beacon.hwid);
 });
+
