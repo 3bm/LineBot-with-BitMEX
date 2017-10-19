@@ -7,7 +7,13 @@ const emoji = require('node-emoji')
 /**
  * Initialize LineBot
  */
-const bot = linebot(settings);
+const bot = linebot(
+    {
+        "channelId": process.env.channelId,
+        "channelSecret": process.env.channelSecret,
+        "channelAccessToken": process.env.channelAccessToken
+    }
+);
 global.bot = bot;
 module.exports = bot;
 

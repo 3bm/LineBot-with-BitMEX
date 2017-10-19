@@ -16,7 +16,7 @@ npm install
 ```
 
 # 設定 Setting
-Add new file named `settings.js` containing the following text under `LineBot` folder.  
+Modify `index.js` under `LineBot` folder.  
 ```javascript=
 module.exports = {
     "channelId": "yourLineBotChannelId",
