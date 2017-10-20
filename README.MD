@@ -1,6 +1,8 @@
 # BitMEX Line Bot
 1. 即時查詢BitMEX合約/Coinmarket所有幣種價格<br/>
 Get latest contract details from BitMEX and price of any coin listed on coinmarket by using Line Bot.<br/>
+2. BitMEX 獲利提醒<br/>
+ROE notification.<br/>
 
 ![](./pic/demo)
 
@@ -8,7 +10,6 @@ Get latest contract details from BitMEX and price of any coin listed on coinmark
 * Node.js 
     * version > 7.10
 * Line Bot Account 
-    * 參考 `LINE BOT 實戰 ( 原理篇 )`
 
 # 安裝 Install
 ```shell
@@ -16,13 +17,18 @@ npm install
 ```
 
 # 設定 Setting
-Modify `index.js` under `LineBot` folder.  
-```javascript=
-module.exports = {
-    "channelId": "yourLineBotChannelId",
-    "channelSecret": "yourLineBotChannelSecret",
-    "channelAccessToken": "yourLineBotChannelAccessToken"
-}
+## Environment variable
+- channelAccessToken
+- channelId
+- channelSecret
+- MONGODB_URI
+
+#### Example
+```shell
+channelAccessToken=YOUR LINE BOT TOKEN
+channelId=YOUR LINE BOT CHANNEL ID
+channelSecret=YOUR LINE BOT SECRET
+MONGODB_URI=mongodb://XXXX:XXXXX@ds000105.mlab.com:27105/OOOO
 ```
 
 # 使用方法 Usage
