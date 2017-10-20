@@ -65,7 +65,6 @@ InitializeDatabase(async function (dbs) {
    */
   process.on('SIGINT', save);
   process.on('SIGTERM', save);
-  process.on('SIGKILL', save);
 
   async function save() {
     console.log('Saving...');
