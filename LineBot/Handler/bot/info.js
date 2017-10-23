@@ -15,7 +15,7 @@ async function info(event) {
         `[ Source Code ] tinyurl.com/ycobwnoh \n`;
 
     str = str + `[ Donate ]\n`;
-    if (perc < 100) {
+    if (false) {
         str = str +
             `- 此BOT使用Heroku的Free plan，每月只運行550小時\n` +
             `- 有意贊助下個月升級Hobby plan (24hr online)請捐贈任意數目的ETH至以下位置\n` +
@@ -24,8 +24,8 @@ async function info(event) {
             `- 月底未達目標次月初依寄款地址全額退款，無法退款or多餘款項挪至作者口袋\n`;
     } else {
         str = str +
-            `- ETH: 0xa087C9E3eAE348D16B95ea19719c67f77EDa7080\n` +
-            `- 此BOT使用Heroku的Hobby plan，24hr online\n`;
+            `- BOT使用Heroku的Hobby plan至2017年底\n` +
+            `- ETH: 0xa087C9E3eAE348D16B95ea19719c67f77EDa7080\n`;
     }
 
     str = str +
