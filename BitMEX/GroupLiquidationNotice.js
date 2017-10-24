@@ -23,14 +23,14 @@ setInterval(() => {
           leavesQty: 'long' },
         */
 
-        // 限定XBT且>100,0000的爆倉資訊
+        // 限定XBT且>10^3的爆倉資訊
         let arr = wsc.liquidation.filter((data) => {
-            return data.symbol.includes('XBT') && data.price > 1000000;
+            return data.symbol.includes('XBT') && (Math.log(data.price) / Math.log(10) > 3);
         });
 
         let replyMsg = '',
             max = 0;
-        arr.map((data,idx) => {
+        arr.map((data, idx) => {
 
             let Qty = Number(data.leavesQty).toFixed(0).replace(/./g, function (c, i, a) {
                 return i && c !== "." && ((a.length - i) % 3 === 0) ? ',' + c : c;
@@ -65,4 +65,4 @@ setInterval(() => {
 
     // always clear
     wsc.liquidation = [];
-}, 60 * 1000); // 10秒檢查一次
+}, 10 * 1000); // 10秒檢查一次

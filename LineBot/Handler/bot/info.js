@@ -51,4 +51,4 @@ async function updateWalletBalance() {
     }
 }
 
-setInterval(updateWalletBalance, 10 * 1000);
+// setInterval(updateWalletBalance, 10 * 1000);

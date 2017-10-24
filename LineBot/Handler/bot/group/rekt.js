@@ -13,9 +13,9 @@ async function rekt(event, debug) {
     });
     var group = global.groupPool[idx];
 
-    // 開關rekt
+    // 開關rekt 限定XBT合約
     if (group.ToggleRekt()){
-        event.reply('Liquidation Notice: ON.\n限定XBT合約&倉位>1M USD');
+        event.reply('Liquidation Notice: ON.');
     }else{
         event.reply('Liquidation Notice: OFF.');
     }
