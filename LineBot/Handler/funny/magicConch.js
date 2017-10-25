@@ -7,7 +7,7 @@ var lastCallTimestamp = moment(0);
 
 function main(event) {
     // 限制n秒才能使用一次
-    if (moment().diff(lastCallTimestamp, 'minutes') > 10) {
+    if (moment().diff(lastCallTimestamp, 'seconds') > 30) {
         lastCallTimestamp = moment();
 
         event.reply({
