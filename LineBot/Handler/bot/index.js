@@ -8,7 +8,7 @@ const group = require('./group/');
 const query = require('./query.js'); // coinmarket & bitmex
 const bitt = require('./bitt/'); // bittrex
 const polo = require('./polo/'); // poloniex
-
+const bitf = require('./bitf/'); // bitfinex
 module.exports = new wrapper(/^bot\s(.+)$/ig, bot);
 
 function bot(event, matchedStr) {
@@ -18,5 +18,6 @@ function bot(event, matchedStr) {
         info.test(event, matchedStr) ||
         bitt.test(event, matchedStr) ||
         polo.test(event, matchedStr) ||
+        bitf.test(event, matchedStr) ||
         query.test(event, matchedStr); // query接收所有字元，務必放在最尾端
 }

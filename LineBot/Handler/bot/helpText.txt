@@ -3,6 +3,7 @@
 [ Coinmarket查詢 ] bot {coin}
 [ Poloniex查詢 ] bot polo {coin}
 [ Bittrex查詢 ] bot bitt {coin}
+[ Bitfinex查詢 ] bot bitf {coin}
 [ BitMEX REKT ] bot group rekt
 [ BitMEX 獲利追蹤 ] 
  - 添加KEY bot watch api {apikey} {secret}

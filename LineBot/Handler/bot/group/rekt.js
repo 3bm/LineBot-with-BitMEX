@@ -15,7 +15,7 @@ async function rekt(event, debug) {
 
     // 開關rekt 限定XBT合約
     if (group.ToggleRekt()){
-        event.reply('Liquidation Notice: ON.');
+        event.reply('Liquidation Notice: ON.\n限定XBTUSD/Z17合約且>100k USD');
     }else{
         event.reply('Liquidation Notice: OFF.');
     }
