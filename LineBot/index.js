@@ -29,7 +29,7 @@ const handler_funny = require('./Handler/funny/');
 bot.on('message', function (event) {
     if (event.message.type == 'text') {
         handler_bot.test(event, event.message.text);
-        handler_funny.test(event, event.message.text);
+        // handler_funny.test(event, event.message.text);
     }
 });
 
