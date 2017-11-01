@@ -26,7 +26,7 @@ async function updateData() {
             if (res.error) throw new Error(res.error);
             bitfinex[symbol] = res;
 
-            await delay(1000);
+            await delay(2000);
         } catch (e) {
             console.log(e);
         }
@@ -55,7 +55,7 @@ async function initSymbols() {
     await updateData();
     setInterval(async () => {
         await updateData();
-    }, 120 * 1000); // bitfinex limit: 60 request/min 因此設120秒更新一次
+    }, 300 * 1000); // bitfinex limit: 60 request/min
 })();
 
 module.exports = () => {
