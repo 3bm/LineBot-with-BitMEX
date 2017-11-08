@@ -23,9 +23,9 @@ setInterval(() => {
           leavesQty: 'long' },
         */
 
-        // 限定XBT且>10^5的爆倉資訊
+        // 限定XBT且>3*10^5的爆倉資訊
         let arr = wsc.liquidation.filter((data) => {
-            return data.symbol.includes('XBT') && (Math.log(data.leavesQty) / Math.log(10) > 5);
+            return data.symbol.includes('XBT') && (Math.log(data.leavesQty) / Math.log(10) > 0.47712125472);
         });
 
         let replyMsg = '',
